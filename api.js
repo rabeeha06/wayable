@@ -1,316 +1,214 @@
 // ============================
-// WayAble API
+// WayAble API (FIXED)
 // ============================
 
-
 // Convert location name to coordinates
-async function getCoordinates(place){
-
-    try{
-
+async function getCoordinates(place) {
+    try {
         const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}`
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}`,
+            {
+                headers: {
+                    "Accept": "application/json",
+                    "User-Agent": "WayAble App (contact: your-email@example.com)"
+                }
+            }
         );
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch location.");
+        }
 
         const data = await response.json();
 
-        if(data.length === 0){
-
+        if (!data || data.length === 0) {
             alert("Location not found.");
             return null;
-
         }
 
         return {
-
             lat: parseFloat(data[0].lat),
             lon: parseFloat(data[0].lon)
-
         };
 
-    }
-
-    catch(error){
-
-        console.error(error);
-
-        alert("Unable to fetch location.");
-
+    } catch (error) {
+        console.error("Geocoding error:", error);
+        alert("Unable to get location.");
         return null;
-
     }
-
 }
 
 
-// Fetch nearby places from Overpass
-async function getAccessiblePlaces(lat, lon){
+// Fetch nearby places (WITH FALLBACK)
+async function getAccessiblePlaces(lat, lon) {
 
     const radius = 3000;
 
     const query = `
 [out:json][timeout:25];
-
 (
-node["amenity"="restaurant"](around:${radius},${lat},${lon});
-node["amenity"="hospital"](around:${radius},${lat},${lon});
-node["amenity"="pharmacy"](around:${radius},${lat},${lon});
-node["tourism"="hotel"](around:${radius},${lat},${lon});
-node["amenity"="bank"](around:${radius},${lat},${lon});
-node["amenity"="toilets"](around:${radius},${lat},${lon});
+  node["amenity"="restaurant"](around:${radius},${lat},${lon});
+  node["amenity"="hospital"](around:${radius},${lat},${lon});
+  node["amenity"="pharmacy"](around:${radius},${lat},${lon});
+  node["tourism"="hotel"](around:${radius},${lat},${lon});
+  node["amenity"="bank"](around:${radius},${lat},${lon});
+  node["amenity"="toilets"](around:${radius},${lat},${lon});
 );
-
 out body;
 `;
 
-    try{
+    const endpoints = [
+        "https://overpass-api.de/api/interpreter",
+        "https://overpass.kumi.systems/api/interpreter"
+    ];
 
-        const response = await fetch(
-            "https://overpass-api.de/api/interpreter",
-            {
-                method:"POST",
-                body:query
-            }
-        );
+    for (let url of endpoints) {
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "text/plain",
+                    "Accept": "application/json"
+                },
+                body: query
+            });
 
-        const data = await response.json();
+            if (!response.ok) continue;
 
-        return data.elements || [];
+            const data = await response.json();
+            return data.elements || [];
 
+        } catch (err) {
+            console.warn("Overpass failed:", url, err);
+        }
     }
 
-    catch(error){
-
-        console.error(error);
-
-        alert("Unable to fetch nearby places.");
-
-        return [];
-
-    }
-
+    alert("Unable to fetch nearby places.");
+    return [];
 }
 
 
 // Convert API data to UI data
-function formatPlaces(elements){
+function formatPlaces(elements) {
+
+    if (!elements) return [];
 
     return elements.map(item => {
 
         const tags = item.tags || {};
 
-        // Wheelchair
-        let wheelchair = "Not Verified";
-
-        if(tags.wheelchair === "yes"){
-            wheelchair = "Accessible";
-        }
-        else if(tags.wheelchair === "limited"){
-            wheelchair = "Limited Access";
-        }
-        else if(tags.wheelchair === "no"){
-            wheelchair = "Not Accessible";
-        }
-
-        // Toilet
-        let toilet = "Unknown";
-
-        if(tags["toilets:wheelchair"] === "yes"){
-            toilet = "Available";
-        }
-
-        // Parking
-        let parking = "Unknown";
-
-        if(tags["parking:disabled"] === "yes"){
-            parking = "Available";
-        }
-
-        // Entrance
-        let entrance = "Unknown";
-
-        if(tags.entrance === "yes"){
-            entrance = "Accessible";
-        }
-
         return {
-
             id: item.id,
-
-            name:
-                tags.name ||
-                "Unnamed Place",
-
+            name: tags.name || "Unnamed Place",
             lat: item.lat,
-
             lon: item.lon,
+            type: tags.amenity || tags.tourism || "Unknown",
 
-            type:
-                tags.amenity ||
-                tags.tourism ||
-                "Unknown",
+            wheelchair:
+                tags.wheelchair === "yes"
+                    ? "Accessible"
+                    : tags.wheelchair === "limited"
+                    ? "Limited"
+                    : tags.wheelchair === "no"
+                    ? "Not Accessible"
+                    : "Not Verified",
 
-            wheelchair,
-            toilet,
-            parking,
-            entrance
+            toilet:
+                tags["toilets:wheelchair"] === "yes"
+                    ? "Available"
+                    : "Unknown",
 
+            parking:
+                tags["parking:disabled"] === "yes"
+                    ? "Available"
+                    : "Unknown",
+
+            entrance:
+                tags.entrance === "yes"
+                    ? "Accessible"
+                    : "Unknown"
         };
-
     });
-
 }
 
 
-// Search by city
-async function searchLocation(place){
+// Search main function
+async function searchLocation(place) {
 
-    const loader =
-    document.getElementById("loader");
+    const loader = document.getElementById("loader");
+    loader?.classList.remove("hidden");
 
-    loader.classList.remove("hidden");
+    try {
 
-    try{
+        const coords = await getCoordinates(place);
 
-        const coords =
-        await getCoordinates(place);
+        if (!coords) return [];
 
-        if(!coords){
+        moveMap(coords.lat, coords.lon);
 
-            loader.classList.add("hidden");
+        const rawPlaces = await getAccessiblePlaces(coords.lat, coords.lon);
 
-            return [];
-        }
-
-        moveMap(
-            coords.lat,
-            coords.lon
-        );
-
-        const rawPlaces =
-        await getAccessiblePlaces(
-            coords.lat,
-            coords.lon
-        );
-
-        const places =
-        formatPlaces(rawPlaces);
+        const places = formatPlaces(rawPlaces);
 
         clearMarkers();
 
-        places.forEach(place => {
-
-            addMarker(place);
-
-        });
+        places.forEach(p => addMarker(p));
 
         fitAllMarkers();
 
         return places;
 
-    }
-
-    catch(error){
-
-        console.error(error);
-
+    } catch (err) {
+        console.error(err);
         return [];
-
+    } finally {
+        loader?.classList.add("hidden");
     }
-
-    finally{
-
-        loader.classList.add("hidden");
-
-    }
-
 }
 
 
 // Current location
-function getCurrentLocation(){
+function getCurrentLocation() {
 
-    if(!navigator.geolocation){
-
-        alert(
-            "Geolocation is not supported."
-        );
-
+    if (!navigator.geolocation) {
+        alert("Geolocation not supported.");
         return;
-
     }
 
-    document
-    .getElementById("loader")
-    .classList.remove("hidden");
+    document.getElementById("loader")?.classList.remove("hidden");
 
     navigator.geolocation.getCurrentPosition(
+        async (pos) => {
 
-        async position => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
 
-            const lat =
-            position.coords.latitude;
-
-            const lon =
-            position.coords.longitude;
-
-            moveMap(
-                lat,
-                lon
-            );
+            moveMap(lat, lon);
 
             clearMarkers();
+            showCurrentLocation(lat, lon);
 
-            showCurrentLocation(
-                lat,
-                lon
-            );
+            const rawPlaces = await getAccessiblePlaces(lat, lon);
+            const places = formatPlaces(rawPlaces);
 
-            const rawPlaces =
-            await getAccessiblePlaces(
-                lat,
-                lon
-            );
-
-            const places =
-            formatPlaces(
-                rawPlaces
-            );
-
-            places.forEach(place => {
-
-                addMarker(place);
-
-            });
+            places.forEach(p => addMarker(p));
 
             fitAllMarkers();
 
             allPlaces = places;
+            displayPlaces(places);
 
-            displayPlaces(
-                places
-            );
-
-            document
-            .getElementById("loader")
-            .classList.add("hidden");
+            document.getElementById("loader")?.classList.add("hidden");
 
         },
-
-        error => {
-
-            console.error(error);
-
-            alert(
-                "Location permission denied."
-            );
-
-            document
-            .getElementById("loader")
-            .classList.add("hidden");
-
+        (err) => {
+            console.error(err);
+            alert("Location permission denied.");
+            document.getElementById("loader")?.classList.add("hidden");
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000
         }
-
     );
-
 }

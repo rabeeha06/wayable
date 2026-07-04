@@ -1,5 +1,5 @@
 // ============================
-// WayAble Map
+// WayAble Map (FIXED)
 // ============================
 
 let map;
@@ -19,96 +19,66 @@ function initMap() {
     L.tileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
-            attribution:
-                "&copy; OpenStreetMap Contributors",
+            attribution: "&copy; OpenStreetMap",
             maxZoom: 19
         }
     ).addTo(map);
+
+    // IMPORTANT: mobile fix
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 500);
+
+    window.addEventListener("resize", () => {
+        map.invalidateSize();
+    });
 }
 
 // Move map
-function moveMap(
-    lat,
-    lon,
-    zoom = 15
-) {
-
-    map.setView(
-        [lat, lon],
-        zoom
-    );
+function moveMap(lat, lon, zoom = 15) {
+    if (!map) return;
+    map.setView([lat, lon], zoom);
 }
 
-// Remove markers
+// Clear markers
 function clearMarkers() {
-
-    markers.forEach(marker => {
-
-        map.removeLayer(marker);
-
-    });
-
+    markers.forEach(m => map.removeLayer(m));
     markers = [];
 }
 
-// Add place marker
+// Add marker
 function addMarker(place) {
 
-    const marker = L.marker(
-        [place.lat, place.lon]
-    ).addTo(map);
+    const marker = L.marker([place.lat, place.lon]).addTo(map);
 
     marker.bindPopup(`
         <b>${place.name}</b><br>
         ${place.type}<br><br>
-
-        ♿ Wheelchair:
-        ${place.wheelchair}<br>
-
-        🚻 Toilet:
-        ${place.toilet}<br>
-
-        🅿 Parking:
-        ${place.parking}<br>
-
-        🚪 Entrance:
-        ${place.entrance}
+        ♿ ${place.wheelchair}<br>
+        🚻 ${place.toilet}<br>
+        🅿 ${place.parking}<br>
+        🚪 ${place.entrance}
     `);
 
     markers.push(marker);
 }
 
-// Focus place from card
-function focusPlace(
-    lat,
-    lon
-) {
-
-    map.setView(
-        [lat, lon],
-        18
-    );
+// Focus place
+function focusPlace(lat, lon) {
+    map.setView([lat, lon], 18);
 }
 
-// Show current location
-function showCurrentLocation(
-    lat,
-    lon
-) {
+// Current location marker
+function showCurrentLocation(lat, lon) {
 
-    const marker = L.circleMarker(
-        [lat, lon],
-        {
-            radius: 8,
-            color: "#0F766E",
-            fillColor: "#0F766E",
-            fillOpacity: 1
-        }
-    ).addTo(map);
+    const marker = L.circleMarker([lat, lon], {
+        radius: 8,
+        color: "#0F766E",
+        fillColor: "#0F766E",
+        fillOpacity: 1
+    }).addTo(map);
 
-    marker.bindPopup(
-        "You are here"
-    );
+    marker.bindPopup("You are here");
 
     markers.push(marker);
 }
@@ -116,24 +86,14 @@ function showCurrentLocation(
 // Fit all markers
 function fitAllMarkers() {
 
-    if(markers.length === 0)
-        return;
+    if (markers.length === 0) return;
 
-    const group =
-        new L.featureGroup(
-            markers
-        );
+    const group = L.featureGroup(markers);
 
-    map.fitBounds(
-        group.getBounds(),
-        {
-            padding: [50,50]
-        }
-    );
+    map.fitBounds(group.getBounds(), {
+        padding: [50, 50]
+    });
 }
 
-// Initialize map
-window.addEventListener(
-    "load",
-    initMap
-);
+// init
+window.addEventListener("load", initMap);

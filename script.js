@@ -1,412 +1,154 @@
 // ==========================
-// WayAble Script
+// WayAble Script (FIXED)
 // ==========================
 
-const searchBtn =
-document.getElementById("searchBtn");
+const searchBtn = document.getElementById("searchBtn");
+const currentBtn = document.getElementById("currentLocationBtn");
+const input = document.getElementById("locationInput");
+const container = document.getElementById("placesContainer");
 
-const currentBtn =
-document.getElementById("currentLocationBtn");
-
-const input =
-document.getElementById("locationInput");
-
-const container =
-document.getElementById("placesContainer");
-
-const landingPage =
-document.getElementById("landingPage");
-
-const resultsPage =
-document.getElementById("resultsPage");
-
-const resultSearch =
-document.getElementById("resultSearch");
+const landingPage = document.getElementById("landingPage");
+const resultsPage = document.getElementById("resultsPage");
+const resultSearch = document.getElementById("resultSearch");
 
 let allPlaces = [];
-function getPlaceIcon(type){
 
-    switch(type){
-
+function getPlaceIcon(type) {
+    switch (type) {
         case "restaurant":
-            return '<i class="fa-solid fa-utensils placeIcon restaurantIcon"></i>';
-
+            return "🍽️";
         case "hospital":
-            return '<i class="fa-solid fa-hospital placeIcon hospitalIcon"></i>';
-
+            return "🏥";
         case "pharmacy":
-            return '<i class="fa-solid fa-pills placeIcon pharmacyIcon"></i>';
-
+            return "💊";
         case "hotel":
-            return '<i class="fa-solid fa-hotel placeIcon hotelIcon"></i>';
-
+            return "🏨";
         case "bank":
-            return '<i class="fa-solid fa-building-columns placeIcon bankIcon"></i>';
-
+            return "🏦";
         case "toilets":
-            return '<i class="fa-solid fa-restroom placeIcon toiletIcon"></i>';
-
+            return "🚻";
         default:
-            return '<i class="fa-solid fa-location-dot placeIcon defaultIcon"></i>';
+            return "📍";
     }
 }
 
+// Search
+searchBtn?.addEventListener("click", startSearch);
 
-// ==========================
-// Search Button
-// ==========================
+input?.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") startSearch();
+});
 
-searchBtn.addEventListener(
-    "click",
-    startSearch
-);
+async function startSearch() {
 
+    const location = input.value.trim();
 
-// ==========================
-// Enter Key Search
-// ==========================
-
-input.addEventListener(
-    "keypress",
-    function(e){
-
-        if(e.key === "Enter"){
-            startSearch();
-        }
-
-    }
-);
-
-
-// ==========================
-// Search Function
-// ==========================
-
-async function startSearch(){
-
-    const location =
-    input.value.trim();
-
-    if(!location){
-
-        alert(
-            "Please enter a location."
-        );
-
+    if (!location) {
+        alert("Please enter a location.");
         return;
     }
 
-    // Hide first page
-    landingPage.classList.add(
-        "hidden"
-    );
+    landingPage.classList.add("hidden");
+    resultsPage.classList.remove("hidden");
 
-    // Show results page
-    resultsPage.classList.remove(
-        "hidden"
-    );
+    setTimeout(() => {
+        if (map) map.invalidateSize();
+    }, 800);
 
-    // Fix leaflet map rendering
-    setTimeout(()=>{
-
-        if(map){
-            map.invalidateSize();
-        }
-
-    },300);
-
-    const places =
-    await searchLocation(
-        location
-    );
+    const places = await searchLocation(location);
 
     allPlaces = places || [];
-
-    displayPlaces(
-        allPlaces
-    );
+    displayPlaces(allPlaces);
 }
 
+// Current location
+currentBtn?.addEventListener("click", () => {
+    landingPage.classList.add("hidden");
+    resultsPage.classList.remove("hidden");
 
-// ==========================
-// Current Location Button
-// ==========================
+    setTimeout(() => {
+        if (map) map.invalidateSize();
+    }, 800);
 
-currentBtn.addEventListener(
-    "click",
-    ()=>{
+    getCurrentLocation();
+});
 
-        landingPage.classList.add(
-            "hidden"
-        );
-
-        resultsPage.classList.remove(
-            "hidden"
-        );
-
-        setTimeout(()=>{
-
-            if(map){
-                map.invalidateSize();
-            }
-
-        },300);
-
-        getCurrentLocation();
-
-    }
-);
-
-
-// ==========================
-// Search Again From Results
-// ==========================
-
-if(resultSearch){
-
-    resultSearch.addEventListener(
-        "keypress",
-        async function(e){
-
-            if(
-                e.key === "Enter"
-            ){
-
-                const location =
-                resultSearch.value
-                .trim();
-
-                if(!location)
-                    return;
-
-                const places =
-                await searchLocation(
-                    location
-                );
-
-                allPlaces =
-                places || [];
-
-                displayPlaces(
-                    allPlaces
-                );
-            }
-
-        }
-    );
-
-}
-
-
-// ==========================
-// Display Cards
-// ==========================
-
-function displayPlaces(
-    places
-){
+// Display places
+function displayPlaces(places) {
 
     container.innerHTML = "";
 
-    if(
-        !places ||
-        places.length === 0
-    ){
-
+    if (!places || places.length === 0) {
         container.innerHTML = `
             <div class="emptyState">
-
-                <h3>
-                    No places found
-                </h3>
-
-                <p>
-                    Try another location.
-                </p>
-
+                <h3>No places found</h3>
+                <p>Try another location.</p>
             </div>
         `;
-
         return;
     }
 
-    places.forEach(place=>{
+    places.forEach(place => {
 
-        const card =
-        document.createElement(
-            "div"
-        );
-
-        card.className =
-        "place-card";
+        const card = document.createElement("div");
+        card.className = "place-card";
 
         card.innerHTML = `
-
             <div class="cardHeader">
-
                 <div>
-
-                  <h3 class="placeTitle">
-    ${getPlaceIcon(place.type)}
-    ${place.name}
-</h3>
-
-                    <p class="type">
-                        ${place.type}
-                    </p>
-
+                    <h3>${getPlaceIcon(place.type)} ${place.name}</h3>
+                    <p>${place.type}</p>
                 </div>
-
-                <button
-                    class="favBtn"
-                >
-                    ♡
-                </button>
-
+                <button class="favBtn">♡</button>
             </div>
 
             <div class="features">
-
-                <p>
-                    ♿ Wheelchair:
-                    <strong>
-                    ${place.wheelchair}
-                    </strong>
-                </p>
-
-                <p>
-                    🚻 Toilet:
-                    <strong>
-                    ${place.toilet}
-                    </strong>
-                </p>
-
-                <p>
-                    🅿 Parking:
-                    <strong>
-                    ${place.parking}
-                    </strong>
-                </p>
-
-                <p>
-                    🚪 Entrance:
-                    <strong>
-                    ${place.entrance}
-                    </strong>
-                </p>
-
+                <p>♿ ${place.wheelchair}</p>
+                <p>🚻 ${place.toilet}</p>
+                <p>🅿 ${place.parking}</p>
+                <p>🚪 ${place.entrance}</p>
             </div>
 
-            <button
-                class="viewBtn"
-            >
-                View on Map
-            </button>
-
+            <button class="viewBtn">View on Map</button>
         `;
 
-        // View on map
-        card.querySelector(
-            ".viewBtn"
-        ).onclick = ()=>{
-
-            focusPlace(
-                place.lat,
-                place.lon
-            );
-
+        card.querySelector(".viewBtn").onclick = () => {
+            focusPlace(place.lat, place.lon);
         };
 
-        // Favorites
-        card.querySelector(
-            ".favBtn"
-        ).onclick = ()=>{
-
-            saveFavorite(
-                place
-            );
-
+        card.querySelector(".favBtn").onclick = () => {
+            saveFavorite(place);
         };
 
-        container.appendChild(
-            card
-        );
-
+        container.appendChild(card);
     });
-
 }
 
+// Favorites safe
+function saveFavorite(place) {
 
-// ==========================
-// Save Favorites
-// ==========================
+    let favorites = [];
 
-function saveFavorite(
-    place
-){
+    try {
+        favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    } catch (e) {
+        favorites = [];
+    }
 
-    let favorites =
-    JSON.parse(
-
-        localStorage.getItem(
-            "favorites"
-        )
-
-    ) || [];
-
-    const exists =
-    favorites.find(
-
-        item =>
-        item.id === place.id
-
-    );
-
-    if(exists){
-
-        alert(
-            "Already in favorites."
-        );
-
+    if (favorites.find(f => f.id === place.id)) {
+        alert("Already in favorites.");
         return;
     }
 
-    favorites.push(
-        place
-    );
+    favorites.push(place);
 
-    localStorage.setItem(
+    localStorage.setItem("favorites", JSON.stringify(favorites));
 
-        "favorites",
-
-        JSON.stringify(
-            favorites
-        )
-
-    );
-
-    alert(
-        "Added to favorites."
-    );
-
+    alert("Added to favorites.");
 }
 
-
-// ==========================
-// Back Button Support
-// ==========================
-
-window.addEventListener(
-    "popstate",
-    ()=>{
-
-        resultsPage.classList.add(
-            "hidden"
-        );
-
-        landingPage.classList.remove(
-            "hidden"
-        );
-
-    }
-);
+// back
+window.addEventListener("popstate", () => {
+    resultsPage.classList.add("hidden");
+    landingPage.classList.remove("hidden");
+});
