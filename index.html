@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+  <link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<link rel="stylesheet"
+href="style.css">
+
+</head>
+
+<body>
+
+    <!-- ================= LANDING PAGE ================= -->
+
+    <section id="landingPage">
+
+        <nav class="navbar">
+
+            <div class="logoContainer">
+
+                <img
+                    src="assets/logo.png"
+                    class="logo"
+                    alt="WayAble Logo">
+
+                <h2>WayAble</h2>
+
+            </div>
+
+        </nav>
+
+        <div class="hero">
+
+            <h1>
+                Accessibility
+                <span>Explorer</span>
+            </h1>
+
+            <p class="subtitle">
+                Navigate the world without barriers.
+            </p>
+
+            <p class="description">
+                Discover accessibility information for places around you and explore with confidence.
+            </p>
+
+            <div class="searchContainer">
+
+                <input
+                    type="text"
+                    id="locationInput"
+                    placeholder="Search city or place">
+
+            </div>
+
+            <div class="buttons">
+
+                <button id="currentLocationBtn"
+                        class="primaryBtn">
+
+                    Use Current Location
+
+                </button>
+
+                <button id="searchBtn"
+                        class="secondaryBtn">
+
+                    Explore Accessibility
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <img
+            src="assets/hero-image.png"
+            class="heroImage"
+            alt="Accessibility Illustration">
+
+    </section>
+
+
+    <!-- ================= RESULTS PAGE ================= -->
+
+    <section
+        id="resultsPage"
+        class="hidden">
+
+        <div class="topSearch">
+
+            <input
+                type="text"
+                id="resultSearch"
+                placeholder="Search another city">
+
+        </div>
+
+        <div id="map"></div>
+
+        <div id="bottomSheet">
+
+            <div class="sheetHandle"></div>
+
+            <div id="placesContainer"></div>
+
+        </div>
+
+    </section>
+
+    <!-- Loader -->
+
+    <div
+        id="loader"
+        class="hidden">
+
+        Loading...
+
+    </div>
+
+    <!-- Scripts -->
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="map.js"></script>
+
+    <script src="api.js"></script>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

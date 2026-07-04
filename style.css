@@ -1,0 +1,294 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Outfit',sans-serif;
+    background:#f7faf9;
+    overflow-x:hidden;
+}
+
+/* ================= LANDING PAGE ================= */
+
+#landingPage{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:30px 20px;
+}
+
+.navbar{
+    width:100%;
+    max-width:1200px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logoContainer{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logo{
+    width:60px;
+    height:60px;
+    object-fit:contain;
+}
+
+.logoContainer h2{
+    color:#0f766e;
+    font-size:34px;
+    font-weight:700;
+}
+
+.hero{
+    text-align:center;
+    margin-top:60px;
+    max-width:700px;
+}
+
+.hero h1{
+    font-size:72px;
+    line-height:1;
+    color:#1f2937;
+}
+
+.hero h1 span{
+    color:#0f766e;
+}
+
+.subtitle{
+    margin-top:25px;
+    font-size:28px;
+    font-weight:600;
+    color:#374151;
+}
+
+.description{
+    margin-top:18px;
+    font-size:18px;
+    color:#6b7280;
+    line-height:1.8;
+}
+
+.searchContainer{
+    margin-top:40px;
+}
+
+.searchContainer input{
+    width:100%;
+    padding:20px;
+    border:none;
+    border-radius:20px;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+    font-size:18px;
+    outline:none;
+}
+
+.buttons{
+    margin-top:25px;
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+.primaryBtn,
+.secondaryBtn{
+    padding:18px;
+    border-radius:20px;
+    border:none;
+    font-size:18px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.primaryBtn{
+    background:#0f766e;
+    color:white;
+}
+
+.secondaryBtn{
+    background:white;
+    border:2px solid #0f766e;
+    color:#0f766e;
+}
+
+.primaryBtn:hover,
+.secondaryBtn:hover{
+    transform:translateY(-3px);
+}
+
+.heroImage{
+    width:100%;
+    max-width:650px;
+    margin-top:40px;
+}
+
+/* ================= RESULTS PAGE ================= */
+
+#resultsPage{
+    position:fixed;
+    inset:0;
+    background:white;
+    z-index:999;
+}
+
+.topSearch{
+    position:absolute;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%);
+    width:92%;
+    max-width:700px;
+    z-index:1000;
+}
+
+.topSearch input{
+    width:100%;
+    padding:18px;
+    border:none;
+    border-radius:18px;
+    box-shadow:0 8px 25px rgba(0,0,0,.15);
+    font-size:16px;
+    outline:none;
+}
+
+#map{
+    width:100%;
+    height:100%;
+}
+
+#bottomSheet{
+    position:absolute;
+    bottom:0;
+    width:100%;
+    height:42vh;
+    background:white;
+    border-radius:30px 30px 0 0;
+    overflow-y:auto;
+    padding:20px;
+    z-index:1000;
+    box-shadow:0 -5px 20px rgba(0,0,0,.1);
+}
+
+.sheetHandle{
+    width:60px;
+    height:6px;
+    background:#d1d5db;
+    border-radius:50px;
+    margin:auto;
+    margin-bottom:20px;
+}
+
+.place-card{
+    background:white;
+    border-radius:20px;
+    padding:18px;
+    margin-bottom:15px;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+}
+
+.place-card h3{
+    color:#0f766e;
+    margin-bottom:10px;
+}
+
+.placeTitle{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    color:#0f766e;
+    font-size:20px;
+    margin-bottom:10px;
+}
+
+.placeIcon{
+    font-size:22px;
+}
+
+.restaurantIcon{
+    color:#f97316;
+}
+
+.hospitalIcon{
+    color:#ef4444;
+}
+
+.pharmacyIcon{
+    color:#22c55e;
+}
+
+.hotelIcon{
+    color:#8b5cf6;
+}
+
+.bankIcon{
+    color:#2563eb;
+}
+
+.toiletIcon{
+    color:#06b6d4;
+}
+
+.defaultIcon{
+    color:#6b7280;
+}
+
+.place-card p{
+    margin:6px 0;
+}
+
+.viewBtn{
+    width:100%;
+    margin-top:15px;
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    background:#0f766e;
+    color:white;
+    cursor:pointer;
+}
+
+/* Loader */
+
+#loader{
+    position:fixed;
+    inset:0;
+    background:rgba(255,255,255,.8);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:24px;
+    font-weight:600;
+    z-index:5000;
+}
+
+.hidden{
+    display:none !important;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:768px){
+
+    .hero h1{
+        font-size:48px;
+    }
+
+    .subtitle{
+        font-size:22px;
+    }
+
+    .description{
+        font-size:16px;
+    }
+
+    #bottomSheet{
+        height:50vh;
+    }
+}
