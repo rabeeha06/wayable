@@ -42,7 +42,6 @@ async function getCoordinates(place) {
 
 // Fetch nearby places using Photon Public API (No API keys needed!)
 async function getAccessiblePlaces(lat, lon) {
-    // Explicitly targets the amenity types from your original scope
     const queryKeywords = ["restaurant", "hospital", "pharmacy", "hotel", "bank", "toilets"];
     let allFeatures = [];
 
@@ -73,7 +72,7 @@ async function getAccessiblePlaces(lat, lon) {
 }
 
 
-// Convert Photon's GeoJSON structure to WayAble UI structure
+// Convert Photon's GeoJSON structure to WayAble UI structure (Fixed Name Handling)
 function formatPlaces(features) {
     if (!features) return [];
 
@@ -82,11 +81,14 @@ function formatPlaces(features) {
         const coordinates = feature.geometry?.coordinates || [0, 0];
         
         // Extract category types
-        const establishmentType = props.osm_value || props.osm_key || "Unknown";
+        const establishmentType = props.osm_value || props.osm_key || "place";
+
+        // Priority fix: Use props.name directly. Fall back to capitalized category only if blank.
+        const displayName = props.name || `Unnamed ${establishmentType.charAt(0).toUpperCase() + establishmentType.slice(1)}`;
 
         return {
             id: props.osm_id || Math.random(),
-            name: props.name || `Unnamed ${establishmentType}`,
+            name: displayName,
             lat: coordinates[1], // GeoJSON uses [Longitude, Latitude]
             lon: coordinates[0],
             type: establishmentType,
