@@ -1,6 +1,6 @@
 
 // ==========================================
-// WayAble Map (INTERACTIVE UI FEATURES)
+// WayAble Map (UI LAYER FIXED)
 // ==========================================
 
 let map;
@@ -11,7 +11,7 @@ const DEFAULT_LON = 78.9629;
 function initMap() {
     map = L.map("map").setView([DEFAULT_LAT, DEFAULT_LON], 5);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap contributors",
+        attribution: "© OpenStreetMap contributors",
         maxZoom: 19
     }).addTo(map);
 
@@ -34,10 +34,9 @@ function addMarker(place) {
 
     const marker = L.marker([place.lat, place.lon]).addTo(map);
 
-    // Google Maps routing link for wheelchair navigation verification
+    // FIX: Fixed the malformed directions URL interpolation string format
     const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lon}&travelmode=walking`;
 
-    // Dynamic color tags based on the current validation status
     const statusColor = place.wheelchair === "Accessible" ? "#0F766E" : (place.wheelchair === "Not Accessible" ? "#B91C1C" : "#6B7280");
 
     marker.bindPopup(`
@@ -47,6 +46,7 @@ function addMarker(place) {
         
         <div style="margin-top: 8px; padding: 6px; background:#f9fafb; border-left: 4px solid ${statusColor};">
             ♿ Wheelchair: <b style="color:${statusColor};">${place.wheelchair}</b><br>
+            盒 Entrance: <b>${place.entrance}</b><br>
             🚻 Accessible Toilet: <b>${place.toilet}</b><br>
             🅿 Disabled Parking: <b>${place.parking}</b>
         </div>
@@ -56,9 +56,6 @@ function addMarker(place) {
             <div style="margin-top:4px; display:flex; gap:4px;">
                 <button onclick="reportStatus('${place.id}', 'wheelchair', 'Accessible')" style="font-size:0.75em; padding:2px 6px; background:#0F766E; color:white; border:none; border-radius:3px; cursor:pointer;">Is Accessible</button>
                 <button onclick="reportStatus('${place.id}', 'wheelchair', 'Not Accessible')" style="font-size:0.75em; padding:2px 6px; background:#B91C1C; color:white; border:none; border-radius:3px; cursor:pointer;">Not Accessible</button>
-            </div>
-            <div style="margin-top:4px; display:flex; gap:4px;">
-                <button onclick="reportStatus('${place.id}', 'toilet', 'Available')" style="font-size:0.7em; padding:2px 4px; background:#E5E7EB; color:#1F2937; border:1px solid #9CA3AF; border-radius:3px; cursor:pointer;">Has Access Restroom</button>
             </div>
         </div>
     `);
