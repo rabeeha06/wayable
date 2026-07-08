@@ -1,12 +1,12 @@
 
 // ==========================================
-// WayAble API (CROWDSOURCED & INDEPENDENT)
+// WayAble API (STABLE & INTERACTIVE)
 // ==========================================
 
-// Local database key for saving user-reported data
 const ACCESSIBILITY_CACHE_KEY = "wayable_user_reports";
 
-// Load user reports from browser storage or start empty
+// Global cache storage to handle dynamic map redrawing on status report click
+let globalRawFeaturesCache = [];
 let localAccessibilityRegistry = JSON.parse(localStorage.getItem(ACCESSIBILITY_CACHE_KEY)) || {};
 
 // Convert location name to coordinates (Nominatim)
@@ -38,8 +38,6 @@ async function getCoordinates(place) {
 // Fetch nearby places using Public Photon API (No Keys Required)
 async function getAccessiblePlaces(lat, lon) {
     const queryKeywords = ["restaurant", "hospital", "pharmacy", "hotel", "bank", "toilets"];
-    let allFeatures = [];
-
     try {
         const fetchPromises = queryKeywords.map(async (keyword) => {
             const url = `https://photon.komoot.io/api/?q=${keyword}&lat=${lat}&lon=${lon}&limit=15`;
@@ -50,8 +48,7 @@ async function getAccessiblePlaces(lat, lon) {
         });
 
         const results = await Promise.all(fetchPromises);
-        allFeatures = results.flat();
-        return allFeatures;
+        return results.flat();
     } catch (err) {
         console.error("Photon API failed:", err);
         alert("Unable to fetch nearby places.");
@@ -69,10 +66,7 @@ function formatPlaces(features) {
         const establishmentType = props.osm_value || props.osm_key || "place";
         const uniqueId = props.osm_id || `${coordinates[1]}_${coordinates[0]}`;
 
-        // Establish fallback name formatting
         const displayName = props.name || `Unnamed ${establishmentType.charAt(0).toUpperCase() + establishmentType.slice(1)}`;
-
-        // Check if our local crowdsourced registry has a user report for this specific place
         const userReport = localAccessibilityRegistry[uniqueId];
 
         return {
@@ -82,7 +76,6 @@ function formatPlaces(features) {
             lon: coordinates[0],
             type: establishmentType,
 
-            // If a user updated it, use that! Otherwise fall back to the API's values
             wheelchair: userReport?.wheelchair || (
                 props.wheelchair === "yes" ? "Accessible" :
                 props.wheelchair === "limited" ? "Limited" :
@@ -95,28 +88,24 @@ function formatPlaces(features) {
     });
 }
 
-// Global window function allowing users to save data adjustments directly from the popup
+// Global action called when users click pop-up edit tools
 window.reportStatus = function(placeId, field, statusValue) {
     if (!localAccessibilityRegistry[placeId]) {
         localAccessibilityRegistry[placeId] = {};
     }
     
-    // Save the status updates locally
     localAccessibilityRegistry[placeId][field] = statusValue;
     localStorage.setItem(ACCESSIBILITY_CACHE_KEY, JSON.stringify(localAccessibilityRegistry));
     
-    alert("Thank you! Your accessibility report has been saved locally.");
+    alert("Thank you! Your report has been saved.");
     
-    // Refresh active markers instantly on screen to show adjustments
-    if (typeof allPlaces !== 'undefined') {
-        clearMarkers();
-        const updatedPlaces = formatPlaces(globalRawFeaturesCache);
-        updatedPlaces.forEach(p => addMarker(p));
-    }
-}
-
-// Store a copy of recent fetches globally so we can redraw seamlessly on edit
-let globalRawFeaturesCache = [];
+    // Refresh markers based on cache
+    clearMarkers();
+    const updatedPlaces = formatPlaces(globalRawFeaturesCache);
+    updatedPlaces.forEach(p => addMarker(p));
+    
+    if (typeof displayPlaces === 'function') displayPlaces(updatedPlaces);
+};
 
 async function searchLocation(place) {
     const loader = document.getElementById("loader");
@@ -127,7 +116,7 @@ async function searchLocation(place) {
         moveMap(coords.lat, coords.lon);
 
         const rawPlaces = await getAccessiblePlaces(coords.lat, coords.lon);
-        globalRawFeaturesCache = rawPlaces; // cache features copy
+        globalRawFeaturesCache = rawPlaces; 
 
         const places = formatPlaces(rawPlaces);
         clearMarkers();
