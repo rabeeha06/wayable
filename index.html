@@ -6,21 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WayAble - Accessibility Explorer</title>
 
-    <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2=family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- ================= LOADER ================= -->
     <div id="loader" class="hidden">
         <div class="loaderContent">
             <div class="spinner"></div>
@@ -28,7 +23,6 @@
         </div>
     </div>
 
-    <!-- ================= LANDING PAGE ================= -->
     <section id="landingPage">
         <nav class="navbar">
             <div class="logoContainer">
@@ -45,13 +39,11 @@
                 Find wheelchair-friendly places, accessible facilities, and important services around you instantly.
             </p>
 
-            <!-- Search Box -->
             <div class="searchContainer">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="locationInput" placeholder="Search city or place">
             </div>
 
-            <!-- Buttons -->
             <div class="buttons">
                 <button id="currentLocationBtn" class="primaryBtn">
                     <i class="fa-solid fa-location-dot"></i> Use Current Location
@@ -63,18 +55,26 @@
         </div>
     </section>
 
-    <!-- ================= RESULTS PAGE ================= -->
     <section id="resultsPage" class="hidden">
-        <!-- Search Bar -->
         <div class="topSearch">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="resultSearch" placeholder="Search another city">
+            <div class="searchWrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="resultSearch" placeholder="Search another city">
+            </div>
+            
+            <div class="filterBar">
+                <button class="filterBtn active" data-category="all">All</button>
+                <button class="filterBtn" data-category="restaurant">🍽️ Food</button>
+                <button class="filterBtn" data-category="hospital">🏥 Hospitals</button>
+                <button class="filterBtn" data-category="pharmacy">💊 Pharmacies</button>
+                <button class="filterBtn" data-category="hotel">🏨 Hotels</button>
+                <button class="filterBtn" data-category="bank">🏦 Banks</button>
+                <button class="filterBtn" data-category="toilets">🚻 Restrooms</button>
+            </div>
         </div>
 
-        <!-- Map Container -->
         <div id="map"></div>
 
-        <!-- Bottom Sheet -->
         <div id="bottomSheet">
             <div class="sheetHandle"></div>
             <h2 class="resultTitle">Nearby Accessible Places</h2>
@@ -82,7 +82,6 @@
         </div>
     </section>
 
-    <!-- Leaflet Engine Core Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="map.js"></script>
     <script src="api.js"></script>
