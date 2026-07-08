@@ -1,229 +1,91 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WayAble - Accessibility Explorer</title>
 
     <!-- Google Font -->
-    <link rel="preconnect"
-          href="https://fonts.googleapis.com">
-
-    <link rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
-          rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2=family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Leaflet CSS -->
-    <link rel="stylesheet"
-          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <!-- Font Awesome -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <!-- CSS -->
-    <link rel="stylesheet"
-          href="style.css">
-
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
     <!-- ================= LOADER ================= -->
-
     <div id="loader" class="hidden">
-
         <div class="loaderContent">
-
             <div class="spinner"></div>
-
-            <p>
-                Finding accessible places...
-            </p>
-
+            <p>Finding accessible places...</p>
         </div>
-
     </div>
-
 
     <!-- ================= LANDING PAGE ================= -->
-
     <section id="landingPage">
-
-        <!-- Navbar -->
-
         <nav class="navbar">
-
             <div class="logoContainer">
-
-                <img
-                    src="assets/logo.jpeg"
-                    class="logo"
-                    alt="WayAble Logo">
-
+                <img src="assets/logo.jpeg" class="logo" alt="WayAble Logo">
                 <h2>WayAble</h2>
-
             </div>
-
         </nav>
 
-
-        <!-- Hero Content -->
-
         <div class="hero">
-
-            <h1>
-                Accessibility
-                <span>Explorer</span>
-            </h1>
-
+            <h1>Accessibility <span>Explorer</span></h1>
             <div class="heroLine"></div>
-
-            <p class="subtitle">
-                Navigate the world without barriers.
-            </p>
-
+            <p class="subtitle">Navigate the world without barriers.</p>
             <p class="description">
-
-                Find wheelchair-friendly places,
-                accessible facilities and important
-                services around you instantly.
-
+                Find wheelchair-friendly places, accessible facilities, and important services around you instantly.
             </p>
-
 
             <!-- Search Box -->
-
             <div class="searchContainer">
-
                 <i class="fa-solid fa-magnifying-glass"></i>
-
-                <input
-                    type="text"
-                    id="locationInput"
-                    placeholder="Search city or place">
-
+                <input type="text" id="locationInput" placeholder="Search city or place">
             </div>
-
 
             <!-- Buttons -->
-
             <div class="buttons">
-
-                <button
-                    id="currentLocationBtn"
-                    class="primaryBtn">
-
-                    <i class="fa-solid fa-location-dot"></i>
-
-                    Use Current Location
-
+                <button id="currentLocationBtn" class="primaryBtn">
+                    <i class="fa-solid fa-location-dot"></i> Use Current Location
                 </button>
-
-
-                <button
-                    id="searchBtn"
-                    class="secondaryBtn">
-
-                    <i class="fa-solid fa-wheelchair-move"></i>
-
-                    Explore Accessibility
-
+                <button id="searchBtn" class="secondaryBtn">
+                    <i class="fa-solid fa-wheelchair-move"></i> Explore Accessibility
                 </button>
-
             </div>
-
         </div>
-
     </section>
-
-
 
     <!-- ================= RESULTS PAGE ================= -->
-
-    <section
-        id="resultsPage"
-        class="hidden">
-
+    <section id="resultsPage" class="hidden">
         <!-- Search Bar -->
-
         <div class="topSearch">
-
             <i class="fa-solid fa-magnifying-glass"></i>
-
-            <input
-                type="text"
-                id="resultSearch"
-                placeholder="Search another city">
-
+            <input type="text" id="resultSearch" placeholder="Search another city">
         </div>
 
-
-        <!-- Map -->
-
+        <!-- Map Container -->
         <div id="map"></div>
 
-
         <!-- Bottom Sheet -->
-
         <div id="bottomSheet">
-
             <div class="sheetHandle"></div>
-
-            <h2 class="resultTitle">
-
-                Nearby Accessible Places
-
-            </h2>
-
+            <h2 class="resultTitle">Nearby Accessible Places</h2>
             <div id="placesContainer"></div>
-
         </div>
-
     </section>
 
-
-
-    <!-- ================= POPUP ================= -->
-
-    <div
-        id="popup"
-        class="hidden">
-
-        <div class="popupContent">
-
-            <button id="closePopup">
-
-                <i class="fa-solid fa-xmark"></i>
-
-            </button>
-
-            <div id="popupBody"></div>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- ================= JAVASCRIPT ================= -->
-
+    <!-- Leaflet Engine Core Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <script src="map.js"></script>
-
     <script src="api.js"></script>
-
     <script src="script.js"></script>
-
 </body>
-
 </html>
