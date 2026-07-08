@@ -166,36 +166,79 @@ body{
     overflow:hidden;
 }
 
-.topSearch{
-    position:absolute;
-    top:15px;
-    left:50%;
-    transform:translateX(-50%);
-    width:92%;
-    max-width:750px;
-    z-index:1000;
+/* ================= COMPACT FILTER CONTROLS BAR WRAPPER ================= */
+.topSearch {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92%;
+    max-width: 750px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.topSearch i{
-    position:absolute;
-    left:25px;
-    top:50%;
-    transform:translateY(-50%);
-    color:#0f766e;
-    font-size:18px;
-    z-index:1001;
+.searchWrapper {
+    position: relative;
+    width: 100%;
 }
 
-.topSearch input{
-    width:100%;
-    height:58px;
-    border:none;
-    border-radius:16px;
-    padding-left:60px;
-    padding-right:20px;
-    box-shadow:0 8px 25px rgba(0,0,0,.15);
-    outline:none;
-    font-size:16px;
+.searchWrapper i {
+    position: absolute;
+    left: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #0f766e;
+    font-size: 18px;
+    z-index: 1001;
+}
+
+.topSearch input {
+    width: 100%;
+    height: 54px;
+    border: none;
+    border-radius: 16px;
+    padding-left: 60px;
+    padding-right: 20px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.12);
+    outline: none;
+    font-size: 16px;
+}
+
+/* HORIZONTAL SCROLL BAR GENERATOR */
+.filterBar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    width: 100%;
+    scrollbar-width: none;
+}
+
+.filterBar::-webkit-scrollbar {
+    display: none;
+}
+
+.filterBtn {
+    flex: 0 0 auto;
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4b5563;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,.05);
+    transition: all 0.2s ease;
+}
+
+.filterBtn.active {
+    background: #0f766e;
+    color: white;
+    border-color: #0f766e;
 }
 
 #map{
@@ -232,7 +275,7 @@ body{
     margin-bottom:15px;
 }
 
-/* ================= PLACE CARD (FIXED FOR BUTTON EXTENSIONS) ================= */
+/* ================= PLACE CARD GRID CONFIGURATIONS ================= */
 .place-card{
     background:white;
     border-radius:20px;
@@ -283,7 +326,7 @@ body{
     margin-top:12px;
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:8px;
+    gap:10px 15px;
 }
 
 .features p{
@@ -292,10 +335,10 @@ body{
     font-size:14px;
     display:flex;
     align-items:center;
-    gap:6px;
+    gap:8px;
 }
 
-/* Clean Dynamic Action Controls layout framework */
+/* Data Verification System Buttons Box Layout */
 .action-box {
     margin-top:12px;
     padding:10px;
@@ -321,7 +364,7 @@ body{
 .action-buttons button {
     flex:1;
     min-width:100px;
-    height:32px;
+    height:34px;
     font-size:12px;
     font-weight:600;
     border:none;
@@ -344,16 +387,6 @@ body{
     font-size:15px;
     font-weight:600;
     cursor:pointer;
-    transition:background .2s;
-}
-
-.viewBtn:hover { background:#0d5c56; }
-
-/* ================= EMPTY STATE ================= */
-.emptyState {
-    text-align:center;
-    padding:30px 10px;
-    color:#6b7280;
 }
 
 /* ================= LOADER ================= */
@@ -381,12 +414,23 @@ body{
 .loaderContent p{ margin-top:15px; color:#0f766e; font-weight:600; }
 @keyframes spin{ 100%{ transform:rotate(360deg); } }
 .hidden{ display:none !important; }
+.emptyState { text-align:center; padding:30px 10px; color:#6b7280; }
 
-/* ================= RESPONSIVE DESIGN ADJUSTMENTS ================= */
+/* ================= RESPONSIVE SMART GRID SYSTEM ================= */
 @media(max-width:768px){
     .hero h1{ font-size:46px; }
     .subtitle{ font-size:20px; }
     .hero { margin-top:20px; }
-    #bottomSheet { height:50vh; padding:15px; }
-    .features { grid-template-columns:1fr; gap:6px; }
+    #bottomSheet { height:48vh; padding:15px; }
+}
+
+@media(max-width: 480px) {
+    /* Stack metrics vertically on tiny screens to avoid text truncation and layout clipping */
+    .features {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    .action-buttons button {
+        min-width: 80px;
+    }
 }
