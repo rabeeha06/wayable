@@ -38,7 +38,12 @@ resultSearch?.addEventListener("keypress", async (e) => {
         if (value) {
             document.getElementById("loader")?.classList.remove("hidden");
             const places = await searchLocation(value);
-            displayPlaces(places || []);
+            
+            // Reset active filter button back to 'all' on new location search
+            resetFilterUI();
+            
+            allPlaces = places || [];
+            displayPlaces(allPlaces);
         }
     }
 });
@@ -57,8 +62,10 @@ async function startSearch() {
         if (typeof map !== 'undefined' && map) map.invalidateSize();
     }, 400);
 
+    resetFilterUI();
     const places = await searchLocation(location);
-    displayPlaces(places || []);
+    allPlaces = places || [];
+    displayPlaces(allPlaces);
 }
 
 currentBtn?.addEventListener("click", () => {
@@ -69,10 +76,11 @@ currentBtn?.addEventListener("click", () => {
         if (typeof map !== 'undefined' && map) map.invalidateSize();
     }, 400);
 
+    resetFilterUI();
     getCurrentLocation();
 });
 
-// Display logic structure 
+// Primary list rendering core engine logic
 function displayPlaces(places) {
     if (!container) return;
     container.innerHTML = "";
@@ -138,7 +146,7 @@ function displayPlaces(places) {
     });
 }
 
-// Category filter tracker row listeners execution
+// Category filter bar click listeners
 document.querySelectorAll(".filterBtn").forEach(button => {
     button.addEventListener("click", (e) => {
         document.querySelectorAll(".filterBtn").forEach(btn => btn.classList.remove("active"));
@@ -152,7 +160,7 @@ document.querySelectorAll(".filterBtn").forEach(button => {
 });
 
 function applyCategoryFilter() {
-    if (!allPlaces || allPlaces.length === 0) return;
+    if (!allPlaces) return;
 
     const filteredPlaces = allPlaces.filter(place => {
         if (activeCategoryFilter === "all") return true;
@@ -170,14 +178,11 @@ function applyCategoryFilter() {
     }
 }
 
-// Hook core collection changes back into runtime arrays tracking values
-const originalDisplayPlaces = displayPlaces;
-displayPlaces = function(places) {
-    if (places !== allPlaces && activeCategoryFilter === "all") {
-        allPlaces = places || [];
-    }
-    originalDisplayPlaces(places);
-};
+function resetFilterUI() {
+    activeCategoryFilter = "all";
+    document.querySelectorAll(".filterBtn").forEach(btn => btn.classList.remove("active"));
+    document.querySelector(".filterBtn[data-category='all']").classList.add("active");
+}
 
 function saveFavorite(place) {
     let favorites = [];
