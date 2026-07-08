@@ -1,6 +1,6 @@
 
 // ==========================================
-// WayAble Script (UI BINDINGS & SYNCHRONIZED)
+// WayAble Script (UI INTERACTIVE SYNC LAYER)
 // ==========================================
 
 const searchBtn = document.getElementById("searchBtn");
@@ -12,7 +12,8 @@ const landingPage = document.getElementById("landingPage");
 const resultsPage = document.getElementById("resultsPage");
 const resultSearch = document.getElementById("resultSearch");
 
-// Handle icon transformations based on category
+let activeCategoryFilter = "all";
+
 function getPlaceIcon(type) {
     switch (type.toLowerCase()) {
         case "restaurant": return "🍽️";
@@ -25,19 +26,17 @@ function getPlaceIcon(type) {
     }
 }
 
-// Attach active listeners to navigation triggers
+// Attach event tracking hooks
 searchBtn?.addEventListener("click", startSearch);
 input?.addEventListener("keypress", (e) => {
     if (e.key === "Enter") startSearch();
 });
 
-// Primary top search redirection listener execution
 resultSearch?.addEventListener("keypress", async (e) => {
     if (e.key === "Enter") {
         const value = resultSearch.value.trim();
         if (value) {
-            const loader = document.getElementById("loader");
-            loader?.classList.remove("hidden");
+            document.getElementById("loader")?.classList.remove("hidden");
             const places = await searchLocation(value);
             displayPlaces(places || []);
         }
@@ -54,7 +53,6 @@ async function startSearch() {
     landingPage.classList.add("hidden");
     resultsPage.classList.remove("hidden");
 
-    // Dynamic Leaflet container viewport corrections
     setTimeout(() => {
         if (typeof map !== 'undefined' && map) map.invalidateSize();
     }, 400);
@@ -63,7 +61,6 @@ async function startSearch() {
     displayPlaces(places || []);
 }
 
-// Current Geolocation trigger handler connection points
 currentBtn?.addEventListener("click", () => {
     landingPage.classList.add("hidden");
     resultsPage.classList.remove("hidden");
@@ -75,7 +72,7 @@ currentBtn?.addEventListener("click", () => {
     getCurrentLocation();
 });
 
-// Render List Results inside Bottom Sheet container layer panels
+// Display logic structure 
 function displayPlaces(places) {
     if (!container) return;
     container.innerHTML = "";
@@ -84,7 +81,7 @@ function displayPlaces(places) {
         container.innerHTML = `
             <div class="emptyState">
                 <h3>No accessible places found</h3>
-                <p>Try searching another proximity target neighborhood.</p>
+                <p>Try resetting filters or searching another city.</p>
             </div>
         `;
         return;
@@ -121,7 +118,6 @@ function displayPlaces(places) {
             <button class="viewBtn targetViewBtn">View on Map</button>
         `;
 
-        // Direct programmatic button assignments to isolate context handlers safely
         card.querySelector(".targetViewBtn").onclick = () => {
             focusPlace(place.lat, place.lon);
         };
@@ -142,6 +138,47 @@ function displayPlaces(places) {
     });
 }
 
+// Category filter tracker row listeners execution
+document.querySelectorAll(".filterBtn").forEach(button => {
+    button.addEventListener("click", (e) => {
+        document.querySelectorAll(".filterBtn").forEach(btn => btn.classList.remove("active"));
+        
+        const targetButton = e.currentTarget;
+        targetButton.classList.add("active");
+        
+        activeCategoryFilter = targetButton.getAttribute("data-category");
+        applyCategoryFilter();
+    });
+});
+
+function applyCategoryFilter() {
+    if (!allPlaces || allPlaces.length === 0) return;
+
+    const filteredPlaces = allPlaces.filter(place => {
+        if (activeCategoryFilter === "all") return true;
+        return place.type.toLowerCase() === activeCategoryFilter.toLowerCase();
+    });
+
+    displayPlaces(filteredPlaces);
+
+    if (typeof clearMarkers === "function" && typeof addMarker === "function") {
+        clearMarkers();
+        filteredPlaces.forEach(p => addMarker(p));
+        if (filteredPlaces.length > 0 && typeof fitAllMarkers === "function") {
+            fitAllMarkers();
+        }
+    }
+}
+
+// Hook core collection changes back into runtime arrays tracking values
+const originalDisplayPlaces = displayPlaces;
+displayPlaces = function(places) {
+    if (places !== allPlaces && activeCategoryFilter === "all") {
+        allPlaces = places || [];
+    }
+    originalDisplayPlaces(places);
+};
+
 function saveFavorite(place) {
     let favorites = [];
     try {
@@ -149,12 +186,10 @@ function saveFavorite(place) {
     } catch (e) {
         favorites = [];
     }
-
     if (favorites.find(f => f.id === place.id)) {
         alert("Already inside saved favorites catalog.");
         return;
     }
-
     favorites.push(place);
     localStorage.setItem("favorites", JSON.stringify(favorites));
     alert("Added successfully to favorites stack.");
