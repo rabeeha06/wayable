@@ -1,8 +1,9 @@
+
 // ============================
-// WayAble API (FIXED)
+// WayAble API (PUBLIC & STABLE)
 // ============================
 
-// Convert location name to coordinates
+// Convert location name to coordinates (Using Nominatim)
 async function getCoordinates(place) {
     try {
         const response = await fetch(
@@ -39,92 +40,79 @@ async function getCoordinates(place) {
 }
 
 
-// Fetch nearby places (WITH FALLBACK)
+// Fetch nearby places using Photon Public API (No API keys needed!)
 async function getAccessiblePlaces(lat, lon) {
+    // Explicitly targets the amenity types from your original scope
+    const queryKeywords = ["restaurant", "hospital", "pharmacy", "hotel", "bank", "toilets"];
+    let allFeatures = [];
 
-    const radius = 3000;
-
-    const query = `
-[out:json][timeout:25];
-(
-  node["amenity"="restaurant"](around:${radius},${lat},${lon});
-  node["amenity"="hospital"](around:${radius},${lat},${lon});
-  node["amenity"="pharmacy"](around:${radius},${lat},${lon});
-  node["tourism"="hotel"](around:${radius},${lat},${lon});
-  node["amenity"="bank"](around:${radius},${lat},${lon});
-  node["amenity"="toilets"](around:${radius},${lat},${lon});
-);
-out body;
-`;
-
-    const endpoints = [
-        "https://overpass-api.de/api/interpreter",
-        "https://overpass.kumi.systems/api/interpreter"
-    ];
-
-    for (let url of endpoints) {
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "text/plain",
-                    "Accept": "application/json"
-                },
-                body: query
-            });
-
-            if (!response.ok) continue;
-
+    try {
+        // Query keywords in parallel for optimal performance
+        const fetchPromises = queryKeywords.map(async (keyword) => {
+            // Geographically bias the search based on user coordinates
+            const url = `https://photon.komoot.io/api/?q=${keyword}&lat=${lat}&lon=${lon}&limit=15`;
+            const response = await fetch(url);
+            
+            if (!response.ok) return [];
+            
             const data = await response.json();
-            return data.elements || [];
+            return data.features || [];
+        });
 
-        } catch (err) {
-            console.warn("Overpass failed:", url, err);
-        }
+        const results = await Promise.all(fetchPromises);
+        
+        // Flatten the array of arrays into a unified list
+        allFeatures = results.flat();
+        return allFeatures;
+
+    } catch (err) {
+        console.error("Photon API failed:", err);
+        alert("Unable to fetch nearby places from the public cluster.");
+        return [];
     }
-
-    alert("Unable to fetch nearby places.");
-    return [];
 }
 
 
-// Convert API data to UI data
-function formatPlaces(elements) {
+// Convert Photon's GeoJSON structure to WayAble UI structure
+function formatPlaces(features) {
+    if (!features) return [];
 
-    if (!elements) return [];
-
-    return elements.map(item => {
-
-        const tags = item.tags || {};
+    return features.map(feature => {
+        const props = feature.properties || {};
+        const coordinates = feature.geometry?.coordinates || [0, 0];
+        
+        // Extract category types
+        const establishmentType = props.osm_value || props.osm_key || "Unknown";
 
         return {
-            id: item.id,
-            name: tags.name || "Unnamed Place",
-            lat: item.lat,
-            lon: item.lon,
-            type: tags.amenity || tags.tourism || "Unknown",
+            id: props.osm_id || Math.random(),
+            name: props.name || `Unnamed ${establishmentType}`,
+            lat: coordinates[1], // GeoJSON uses [Longitude, Latitude]
+            lon: coordinates[0],
+            type: establishmentType,
 
+            // Directly parsing OpenStreetMap core tags mapping
             wheelchair:
-                tags.wheelchair === "yes"
+                props.wheelchair === "yes"
                     ? "Accessible"
-                    : tags.wheelchair === "limited"
+                    : props.wheelchair === "limited"
                     ? "Limited"
-                    : tags.wheelchair === "no"
+                    : props.wheelchair === "no"
                     ? "Not Accessible"
                     : "Not Verified",
 
             toilet:
-                tags["toilets:wheelchair"] === "yes"
+                props["toilets:wheelchair"] === "yes"
                     ? "Available"
                     : "Unknown",
 
             parking:
-                tags["parking:disabled"] === "yes"
+                props["parking:disabled"] === "yes"
                     ? "Available"
                     : "Unknown",
 
             entrance:
-                tags.entrance === "yes"
+                props.entrance === "yes"
                     ? "Accessible"
                     : "Unknown"
         };
@@ -132,29 +120,27 @@ function formatPlaces(elements) {
 }
 
 
-// Search main function
+// Search main function triggered via UI input form
 async function searchLocation(place) {
-
     const loader = document.getElementById("loader");
     loader?.classList.remove("hidden");
 
     try {
-
         const coords = await getCoordinates(place);
-
         if (!coords) return [];
 
         moveMap(coords.lat, coords.lon);
 
         const rawPlaces = await getAccessiblePlaces(coords.lat, coords.lon);
-
         const places = formatPlaces(rawPlaces);
 
         clearMarkers();
-
         places.forEach(p => addMarker(p));
-
         fitAllMarkers();
+
+        // Safe check global hooks if UI files require data array binding
+        if (typeof allPlaces !== 'undefined') allPlaces = places;
+        if (typeof displayPlaces === 'function') displayPlaces(places);
 
         return places;
 
@@ -167,11 +153,10 @@ async function searchLocation(place) {
 }
 
 
-// Current location
+// Fetch current location using native browser Geolocation
 function getCurrentLocation() {
-
     if (!navigator.geolocation) {
-        alert("Geolocation not supported.");
+        alert("Geolocation not supported by your browser.");
         return;
     }
 
@@ -179,12 +164,10 @@ function getCurrentLocation() {
 
     navigator.geolocation.getCurrentPosition(
         async (pos) => {
-
             const lat = pos.coords.latitude;
             const lon = pos.coords.longitude;
 
             moveMap(lat, lon);
-
             clearMarkers();
             showCurrentLocation(lat, lon);
 
@@ -192,14 +175,12 @@ function getCurrentLocation() {
             const places = formatPlaces(rawPlaces);
 
             places.forEach(p => addMarker(p));
-
             fitAllMarkers();
 
-            allPlaces = places;
-            displayPlaces(places);
+            if (typeof allPlaces !== 'undefined') allPlaces = places;
+            if (typeof displayPlaces === 'function') displayPlaces(places);
 
             document.getElementById("loader")?.classList.add("hidden");
-
         },
         (err) => {
             console.error(err);
