@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 *{
@@ -14,31 +15,19 @@ body{
 }
 
 /* ================= LANDING PAGE ================= */
-
 #landingPage{
     min-height:100vh;
     position:relative;
-    overflow:hidden;
-
+    overflow-y:auto;
     display:flex;
     flex-direction:column;
     align-items:center;
-
     padding:30px 20px;
-
-    background:
-        linear-gradient(
-            rgba(255,255,255,.88),
-            rgba(255,255,255,.88)
-        ),
-        url("assets/hero.jpeg");
-
+    background: linear-gradient(rgba(255,255,255,.88), rgba(255,255,255,.88)), url("assets/hero.jpeg");
     background-size:cover;
     background-position:center bottom;
     background-repeat:no-repeat;
 }
-
-/* ================= NAVBAR ================= */
 
 .navbar{
     width:100%;
@@ -68,21 +57,19 @@ body{
 }
 
 /* ================= HERO ================= */
-
 .hero{
     width:100%;
     max-width:650px;
     text-align:center;
-    margin-top:50px;
+    margin-top:40px;
     z-index:2;
-
-    padding-bottom:320px;
+    padding-bottom:40px;
 }
 
 .hero h1{
-    font-size:76px;
+    font-size:64px;
     font-weight:800;
-    line-height:.92;
+    line-height:1.0;
     color:#14213d;
 }
 
@@ -96,27 +83,26 @@ body{
     height:6px;
     background:#0f766e;
     border-radius:50px;
-    margin:25px auto;
+    margin:20px auto;
 }
 
 .subtitle{
-    font-size:30px;
+    font-size:26px;
     font-weight:600;
     color:#1f2937;
 }
 
 .description{
-    margin-top:18px;
+    margin-top:14px;
     color:#6b7280;
-    font-size:18px;
-    line-height:1.8;
+    font-size:16px;
+    line-height:1.6;
 }
 
 /* ================= SEARCH ================= */
-
 .searchContainer{
     width:100%;
-    margin-top:40px;
+    margin-top:30px;
     position:relative;
 }
 
@@ -131,66 +117,47 @@ body{
 
 .searchContainer input{
     width:100%;
-    height:72px;
+    height:64px;
     border:none;
-    border-radius:22px;
+    border-radius:18px;
     padding-left:65px;
     padding-right:20px;
-    font-size:18px;
+    font-size:17px;
     outline:none;
     background:white;
     box-shadow:0 10px 25px rgba(0,0,0,.08);
 }
 
-.searchContainer input::placeholder{
-    color:#9ca3af;
-}
-
 /* ================= BUTTONS ================= */
-
 .buttons{
     display:flex;
     flex-direction:column;
-    gap:18px;
-    margin-top:25px;
+    gap:14px;
+    margin-top:20px;
 }
 
-.primaryBtn,
-.secondaryBtn{
+.primaryBtn, .secondaryBtn{
     width:100%;
-    height:68px;
-    border-radius:18px;
-    font-size:18px;
+    height:60px;
+    border-radius:16px;
+    font-size:17px;
     font-weight:600;
     cursor:pointer;
-
     display:flex;
     justify-content:center;
     align-items:center;
     gap:12px;
-
     transition:.3s;
 }
 
-.primaryBtn{
-    background:#0f766e;
-    color:white;
-    border:none;
-}
+.primaryBtn{ background:#0f766e; color:white; border:none; }
+.secondaryBtn{ background:white; color:#0f766e; border:2px solid #0f766e; }
 
-.secondaryBtn{
-    background:white;
-    color:#0f766e;
-    border:2px solid #0f766e;
-}
-
-.primaryBtn:hover,
-.secondaryBtn:hover{
-    transform:translateY(-3px);
+.primaryBtn:hover, .secondaryBtn:hover{
+    transform:translateY(-2px);
 }
 
 /* ================= RESULTS PAGE ================= */
-
 #resultsPage{
     position:fixed;
     inset:0;
@@ -199,11 +166,9 @@ body{
     overflow:hidden;
 }
 
-/* ================= TOP SEARCH ================= */
-
 .topSearch{
     position:absolute;
-    top:20px;
+    top:15px;
     left:50%;
     transform:translateX(-50%);
     width:92%;
@@ -223,17 +188,15 @@ body{
 
 .topSearch input{
     width:100%;
-    height:68px;
+    height:58px;
     border:none;
-    border-radius:20px;
+    border-radius:16px;
     padding-left:60px;
     padding-right:20px;
     box-shadow:0 8px 25px rgba(0,0,0,.15);
     outline:none;
-    font-size:17px;
+    font-size:16px;
 }
-
-/* ================= MAP ================= */
 
 #map{
     width:100%;
@@ -241,14 +204,14 @@ body{
 }
 
 /* ================= BOTTOM SHEET ================= */
-
 #bottomSheet{
     position:absolute;
     bottom:0;
+    left:0;
     width:100%;
-    height:50vh;
+    height:45vh;
     background:white;
-    border-radius:35px 35px 0 0;
+    border-radius:30px 30px 0 0;
     overflow-y:auto;
     padding:20px;
     z-index:1000;
@@ -256,179 +219,174 @@ body{
 }
 
 .sheetHandle{
-    width:60px;
-    height:6px;
+    width:50px;
+    height:5px;
     background:#d1d5db;
     border-radius:50px;
-    margin:0 auto 20px;
+    margin:0 auto 15px;
 }
 
 .resultTitle{
     color:#14213d;
-    margin-bottom:20px;
+    font-size:22px;
+    margin-bottom:15px;
 }
 
-/* ================= PLACE CARD ================= */
-
+/* ================= PLACE CARD (FIXED FOR BUTTON EXTENSIONS) ================= */
 .place-card{
     background:white;
-    border-radius:24px;
-    padding:20px;
-    margin-bottom:18px;
-    box-shadow:0 6px 18px rgba(0,0,0,.08);
+    border-radius:20px;
+    padding:16px;
+    margin-bottom:16px;
+    box-shadow:0 4px 15px rgba(0,0,0,.06);
+    border:1px solid #e5e7eb;
 }
 
-.placeTitle{
+.cardHeader {
     display:flex;
-    align-items:center;
-    gap:15px;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+    width:100%;
 }
 
-.placeIcon{
-    width:55px;
-    height:55px;
-    border-radius:50%;
-    background:#ecfdf5;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    color:#0f766e;
-    font-size:22px;
+.cardHeaderTitle {
+    flex:1;
+    min-width:0;
 }
 
-.placeInfo h3{
-    font-size:22px;
+.cardHeaderTitle h3 {
+    font-size:18px;
     color:#14213d;
+    word-wrap:break-word;
+    overflow-wrap:break-word;
 }
 
-.category{
-    font-size:14px;
-    font-weight:700;
-    color:#0f766e;
+.cardHeaderTitle p {
+    font-size:13px;
     text-transform:uppercase;
-    margin-top:4px;
+    color:#0f766e;
+    font-weight:700;
+    margin-top:2px;
+}
+
+.favBtn{
+    background:none;
+    border:none;
+    font-size:22px;
+    color:#9ca3af;
+    cursor:pointer;
+    padding:2px 6px;
 }
 
 .features{
-    margin-top:15px;
+    margin-top:12px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
 }
 
 .features p{
-    margin:10px 0;
+    margin:0;
     color:#4b5563;
+    font-size:14px;
     display:flex;
     align-items:center;
-    gap:10px;
+    gap:6px;
 }
 
-.features i{
-    color:#0f766e;
-    width:20px;
+/* Clean Dynamic Action Controls layout framework */
+.action-box {
+    margin-top:12px;
+    padding:10px;
+    background:#f9fafb;
+    border-radius:12px;
+    border:1px dashed #d1d5db;
 }
 
-/* ================= BUTTON ================= */
+.action-box span {
+    font-size:12px;
+    font-weight:700;
+    color:#4b5563;
+    display:block;
+    margin-bottom:6px;
+}
+
+.action-buttons {
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+}
+
+.action-buttons button {
+    flex:1;
+    min-width:100px;
+    height:32px;
+    font-size:12px;
+    font-weight:600;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    color:white;
+}
+
+.btn-acc { background-color:#0f766e; }
+.btn-not { background-color:#b91c1c; }
 
 .viewBtn{
     width:100%;
-    margin-top:20px;
-    height:55px;
+    margin-top:12px;
+    height:46px;
     border:none;
-    border-radius:14px;
+    border-radius:12px;
     background:#0f766e;
     color:white;
-    font-size:16px;
+    font-size:15px;
     font-weight:600;
     cursor:pointer;
+    transition:background .2s;
+}
+
+.viewBtn:hover { background:#0d5c56; }
+
+/* ================= EMPTY STATE ================= */
+.emptyState {
+    text-align:center;
+    padding:30px 10px;
+    color:#6b7280;
 }
 
 /* ================= LOADER ================= */
-
 #loader{
     position:fixed;
     inset:0;
-    background:rgba(255,255,255,.85);
+    background:rgba(255,255,255,.9);
     display:flex;
     justify-content:center;
     align-items:center;
     z-index:5000;
 }
 
-.loaderContent{
-    text-align:center;
-}
-
+.loaderContent{ text-align:center; }
 .spinner{
-    width:60px;
-    height:60px;
-    border:6px solid #d1d5db;
-    border-top:6px solid #0f766e;
+    width:50px;
+    height:50px;
+    border:5px solid #e5e7eb;
+    border-top:5px solid #0f766e;
     border-radius:50%;
     animation:spin 1s linear infinite;
     margin:auto;
 }
 
-.loaderContent p{
-    margin-top:20px;
-    color:#0f766e;
-    font-weight:600;
-}
+.loaderContent p{ margin-top:15px; color:#0f766e; font-weight:600; }
+@keyframes spin{ 100%{ transform:rotate(360deg); } }
+.hidden{ display:none !important; }
 
-@keyframes spin{
-    100%{
-        transform:rotate(360deg);
-    }
-}
-
-.hidden{
-    display:none !important;
-}
-
-/* ================= MOBILE ================= */
-
+/* ================= RESPONSIVE DESIGN ADJUSTMENTS ================= */
 @media(max-width:768px){
-
-    .logo{
-        width:45px;
-        height:45px;
-    }
-
-    .logoContainer h2{
-        font-size:28px;
-    }
-
-    .hero{
-        margin-top:30px;
-        padding-bottom:220px;
-    }
-
-    .hero h1{
-        font-size:56px;
-    }
-
-    .subtitle{
-        font-size:24px;
-    }
-
-    .description{
-        font-size:16px;
-    }
-
-    .searchContainer input{
-        height:65px;
-        font-size:16px;
-    }
-
-    .primaryBtn,
-    .secondaryBtn{
-        height:62px;
-        font-size:16px;
-    }
-
-    #bottomSheet{
-        height:55vh;
-    }
-
-    .placeInfo h3{
-        font-size:18px;
-    }
+    .hero h1{ font-size:46px; }
+    .subtitle{ font-size:20px; }
+    .hero { margin-top:20px; }
+    #bottomSheet { height:50vh; padding:15px; }
+    .features { grid-template-columns:1fr; gap:6px; }
 }
